@@ -412,6 +412,39 @@ class SQLiteDatabase {
     return this.db.prepare('SELECT * FROM login_attempts WHERE phone_number = ? ORDER BY created_at DESC LIMIT ?').all(phoneNumber, limit);
   }
 
+  // Provinces
+  createProvince(province) {
+    const id = uuidv4();
+    const stmt = this.db.prepare(`
+      INSERT INTO provinces (id, name, created_by)
+      VALUES (?, ?, ?)
+    `);
+    stmt.run(id, province.name, province.created_by || null);
+    return this.getProvinceById(id);
+  }
+
+  getProvinceById(id) {
+    return this.db.prepare('SELECT * FROM provinces WHERE id = ?').get(id);
+  }
+
+  getAllProvinces() {
+    return this.db.prepare('SELECT * FROM provinces ORDER BY name').all();
+  }
+
+  updateProvince(id, updates) {
+    const fields = Object.keys(updates).map(key => `${key} = ?`).join(', ');
+    const values = [...Object.values(updates), id];
+    const stmt = this.db.prepare(`UPDATE provinces SET ${fields} WHERE id = ?`);
+    stmt.run(...values);
+    return this.getProvinceById(id);
+  }
+
+  deleteProvince(id) {
+    const stmt = this.db.prepare('DELETE FROM provinces WHERE id = ?');
+    stmt.run(id);
+    return { success: true };
+  }
+
   // Statistics
   getAttendanceStats(schoolId, date) {
     return this.db.prepare(`

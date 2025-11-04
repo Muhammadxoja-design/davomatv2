@@ -374,6 +374,38 @@ class MongoDatabase {
       .toArray();
   }
 
+  // Provinces
+  async createProvince(province) {
+    const id = uuidv4();
+    const provinceData = {
+      _id: id,
+      id,
+      name: province.name,
+      created_by: province.created_by || null,
+      created_at: new Date()
+    };
+    await this.db.collection('provinces').insertOne(provinceData);
+    return provinceData;
+  }
+
+  async getProvinceById(id) {
+    return await this.db.collection('provinces').findOne({ id });
+  }
+
+  async getAllProvinces() {
+    return await this.db.collection('provinces').find().sort({ name: 1 }).toArray();
+  }
+
+  async updateProvince(id, updates) {
+    await this.db.collection('provinces').updateOne({ id }, { $set: updates });
+    return await this.getProvinceById(id);
+  }
+
+  async deleteProvince(id) {
+    await this.db.collection('provinces').deleteOne({ id });
+    return { success: true };
+  }
+
   // Statistics
   async getAttendanceStats(schoolId, date) {
     const attendance = await this.db.collection('attendance')

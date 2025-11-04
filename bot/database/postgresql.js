@@ -452,6 +452,43 @@ class PostgreSQLDatabase {
     return result.rows;
   }
 
+  // Provinces
+  async createProvince(province) {
+    const id = uuidv4();
+    const result = await this.pool.query(
+      `INSERT INTO provinces (id, name, created_by)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [id, province.name, province.created_by || null]
+    );
+    return result.rows[0];
+  }
+
+  async getProvinceById(id) {
+    const result = await this.pool.query('SELECT * FROM provinces WHERE id = $1', [id]);
+    return result.rows[0];
+  }
+
+  async getAllProvinces() {
+    const result = await this.pool.query('SELECT * FROM provinces ORDER BY name');
+    return result.rows;
+  }
+
+  async updateProvince(id, updates) {
+    const fields = Object.keys(updates).map((key, i) => `${key} = $${i + 1}`).join(', ');
+    const values = [...Object.values(updates), id];
+    const result = await this.pool.query(
+      `UPDATE provinces SET ${fields} WHERE id = $${values.length} RETURNING *`,
+      values
+    );
+    return result.rows[0];
+  }
+
+  async deleteProvince(id) {
+    await this.pool.query('DELETE FROM provinces WHERE id = $1', [id]);
+    return { success: true };
+  }
+
   // Statistics
   async getAttendanceStats(schoolId, date) {
     const result = await this.pool.query(`
