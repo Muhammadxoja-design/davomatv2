@@ -61,14 +61,16 @@ class ApiClient {
 
     // Handle different response types
     const contentType = response.headers.get('content-type');
-    if (contentType?.includes('application/json')) {
-      return response.json();
-    } else if (contentType?.includes('application/octet-stream') || contentType?.includes('application/pdf')) {
-      return response.blob() as any;
-    } else if (response.status === 204) {
+    if (response.status === 204) {
       return undefined as any;
+    } else if (contentType?.includes('application/json')) {
+      return response.json();
+    } else if (contentType && !contentType.includes('application/json')) {
+      // Any non-JSON application type (Excel, PDF, binary, etc.) should be treated as Blob
+      return response.blob() as any;
     }
     
+    // Default to JSON
     return response.json();
   }
 
