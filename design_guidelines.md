@@ -1,248 +1,212 @@
-# Design Guidelines - School Attendance Management System
+# Design Guidelines - Maktab Davomat Boshqaruv Tizimi
 
-## Design Approach
+## Design Framework
+Custom system merging Material Design's data components with Apple HIG's clarity. Professional educational platform for Uzbek language with hierarchical admin workflows (Super Admin → Maktab Admin → Sinf Admin). Focus: Real-time data visibility, institutional trust, crystal-clear hierarchy.
 
-**Framework**: Custom design system inspired by Vision UI Dashboard with Material Design principles for data-heavy components. This creates a modern, professional educational technology platform that balances visual appeal with functional clarity.
+## Colors
 
-**Core Philosophy**: 
-- Trustworthy and professional for educational institutions
-- Engaging and accessible for students and parents
-- Efficient and clear for daily administrative tasks
-- Data visualization that tells stories, not just numbers
+**Primary Palette:**
+- `#1E40AF` Primary Blue - CTAs, active states
+- `#1E3A8A` Deep Blue - Headers, navigation
+- `#0EA5E9` Sky Blue - Links, secondary actions
+- `#FFFFFF` White - Cards, backgrounds
+- `#F8FAFC` Light Gray - Page backgrounds, disabled
+- `#334155` Dark Gray - Body text
 
-## Typography System
+**Semantic:**
+- Success/Present: `#10B981` | Warning/Late: `#F59E0B` | Error/Absent: `#EF4444` | Info/Excused: `#3B82F6`
 
-**Font Families** (via Google Fonts CDN):
-- Primary: 'Inter' - Clean, highly legible for UI elements and data
-- Display: 'Poppins' - Bold headings and dashboard titles
-- Monospace: 'JetBrains Mono' - Statistics, attendance codes, IDs
+**Dark Mode:**
+- Background: `#0F172A` | Cards: `#1E293B` (semi-transparent) | Primary: `#60A5FA` | Text: `#F1F5F9`
 
-**Type Scale**:
-- Hero/Dashboard Title: text-4xl (Poppins, font-bold)
-- Section Headers: text-2xl (Poppins, font-semibold)
-- Card Titles: text-lg (Inter, font-semibold)
-- Body Text: text-base (Inter, font-normal)
-- Secondary/Meta: text-sm (Inter, font-medium)
-- Captions/Labels: text-xs (Inter, font-normal)
+## Typography
 
-## Layout System
+**Fonts (Google CDN):**
+- **Inter** - UI/body (Latin + Cyrillic)
+- **Manrope** - Headers/titles (excellent Uzbek support)
+- **Roboto Mono** - Statistics, IDs, codes
 
-**Spacing Primitives**: Consistent use of Tailwind units: 2, 4, 6, 8, 12, 16, 20, 24
-- Micro spacing (between related items): 2, 4
-- Component internal spacing: 6, 8
-- Section spacing: 12, 16, 20
-- Page margins: 20, 24
+**Scale:**
+- Hero: `text-3xl md:text-4xl` (Manrope, font-bold)
+- Page Headers: `text-2xl` (Manrope, font-semibold)
+- Sections: `text-xl` (Manrope, font-semibold)
+- Cards: `text-lg` (Inter, font-semibold)
+- Body: `text-base` (Inter, normal)
+- Labels: `text-sm` (Inter, medium)
+- Captions: `text-xs` (Inter, normal)
 
-**Grid System**:
-- Dashboard: 12-column grid with gap-6
-- Cards: 1 column (mobile), 2-3 columns (tablet), 3-4 columns (desktop)
-- Tables: Full-width with horizontal scroll on mobile
-- Forms: Single column (mobile), 2-column (desktop) for related fields
+**Uzbek Considerations:** Line-height 1.6, 16px base font, Unicode support for oʻ, gʻ, sh, ch
 
-## Dashboard Visual Architecture
+## Layout
 
-**Layout Structure**:
-- Sidebar Navigation: Fixed, 280px width (desktop), collapsible to icons (tablet), bottom nav (mobile)
-- Main Content: max-w-7xl with px-6 py-8 spacing
-- Top Bar: Breadcrumbs, search, notifications, profile (h-16)
-- Content Cards: Glassmorphism effect with backdrop-blur
+**Spacing (Tailwind units):** 4, 6 (internal) | 6, 8 (cards) | 12, 16 (sections) | 16, 24 (page margins)
 
-**Card Design Pattern** (Vision UI Inspired):
-- Semi-transparent backgrounds with gradient overlays
-- Backdrop blur: backdrop-blur-xl
-- Borders: 1px subtle gradient borders
-- Border radius: rounded-2xl for cards, rounded-xl for nested elements
-- Shadows: Multi-layered shadows for depth (shadow-lg, shadow-[custom])
-- Padding: p-6 (mobile), p-8 (desktop)
+**Responsive Grids:**
+- Stats: `grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6`
+- Cards: `grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6`
+- Forms: Single-col (mobile), 2-col related fields (desktop)
 
-**Dashboard Sections**:
+**Structure:**
+- Sidebar: 280px fixed (desktop), collapsible icon-only (tablet), bottom nav (mobile)
+- Top Bar: h-16, breadcrumbs left, search/notifications/toggles/profile right
+- Main: `max-w-7xl px-6 py-8`
 
-1. **Statistics Overview (Hero Section)**:
-   - 4 stat cards in grid (grid-cols-1 md:grid-cols-2 lg:grid-cols-4)
-   - Each card: Icon (top-left), Value (large, center), Label (bottom), Trend indicator
-   - Gradient backgrounds per metric type (attendance rate, total students, active classes, today's absences)
+## Dashboard Layouts
 
-2. **Real-Time Attendance Monitor**:
-   - Large card spanning 2/3 width
-   - Live updating list of current period attendance
-   - Class photos displayed in grid
-   - Status badges: Present (green), Absent (red), Late (yellow), Excused (blue)
+**Super Admin:**
+1. 4 KPI cards: Regions, Schools, Attendance Rate, Active Users (text-4xl, gradient backgrounds, trends)
+2. Regional overview table/map with filters
+3. School leaderboard (top 10 / bottom 10)
+4. Real-time system activity feed
 
-3. **Weekly Overview Chart**:
-   - Full-width card
-   - Line/Bar chart showing attendance trends
-   - Interactive hover states with detailed tooltips
-   - Gradient fill under lines
+**Maktab Admin:**
+1. 4 KPIs: Classes, Students, Today's Rate, Pending Actions
+2. Real-time attendance monitor (2/3 width, live class breakdown)
+3. Weekly trends chart
+4. Student management quick access
 
-4. **Recent Activity Feed**:
-   - 1/3 width sidebar card
-   - Timeline design with connecting lines
-   - User avatars, timestamps, action descriptions
-   - Infinite scroll or pagination
+**Sinf Admin:**
+1. Class stats banner + photo collage
+2. Student grid (3-6 cols responsive, photos, status, one-tap update)
+3. Attendance capture interface (big CTA, photo upload, batch tools)
+4. 7-day calendar per-student view
 
-## Component Library
+## Components
 
-**Navigation (Sidebar)**:
-- Logo area: h-20 with school emblem and name
-- Menu items: py-3 px-4, with icon (left), label, badge (optional, right)
-- Active state: Gradient background, increased opacity
-- Hover: Subtle background change
-- Dividers between sections
+**Navigation Sidebar:**
+- Logo: h-20 | Items: `py-3 px-4`, 24px icons, badge for notifications
+- Active: Blue gradient bg, white text | Hover: Lighter blue
+- Role indicator badge at top
 
-**Data Tables**:
-- Header: Sticky, semi-transparent background, font-semibold
-- Rows: Striped (subtle), hover state with background change
-- Cells: py-4 px-6 with proper text alignment
-- Actions column: Icon buttons with tooltips
-- Pagination: Bottom-center with page numbers and prev/next
+**Top Bar:**
+- Breadcrumbs: `text-sm` left | Search: expandable `w-64→w-96` center-left
+- Icons: 40x40, tooltips | Profile: Avatar + name + role badge
 
-**Forms (User Management, Attendance)**:
-- Labels: text-sm, font-medium, mb-2
-- Inputs: Consistent h-12, px-4, rounded-lg
-- Focus states: Ring with accent color
-- Error states: Red ring, helper text below
-- Success states: Green ring
-- Phone input: Flag selector + number field
+**Data Cards:**
+```css
+rounded-xl p-6 md:p-8 shadow-md
+border-1 blue accent (light) / glow (dark)
+Header: 40x40 icon circle, title, text-3xl value
+Footer: Trend + comparison
+```
 
-**Buttons**:
-- Primary: Gradient backgrounds, rounded-lg, px-6 py-3
-- Secondary: Outlined with border-2, transparent background
-- Ghost: No border, minimal background on hover
-- Icon buttons: Square (40x40), rounded-full for avatars
-- Floating action button (FAB): Fixed bottom-right for quick actions
+**Tables:**
+- Sticky header: `bg-blue-50` (light) / `bg-blue-900/30` (dark)
+- Rows: `py-4 px-6`, hover `bg-blue-50`
+- Photos: 48x48 rounded-full | Status: Pill badges
+- Pagination center-bottom
 
-**Modal Dialogs**:
-- Overlay: Semi-transparent dark (backdrop blur)
-- Content: Centered card, max-w-2xl
-- Header: Title, close button (top-right)
-- Body: Scrollable if needed
-- Footer: Actions (right-aligned), cancel (left)
+**Forms:**
+```css
+Labels: text-sm font-medium mb-2, red asterisk required
+Inputs: h-12 px-4 rounded-lg border-2 focus:ring-2 ring-blue-500
+Layout: 2-col for related fields (desktop)
+File upload: Drag-drop zone with preview
+```
 
-**Cards & Containers**:
-- Info Cards: Icon + Title + Value + Description layout
-- Student Cards: Photo (top), Name, ID, Attendance %, Quick actions
-- Class Cards: Class name, Teacher, Student count, Today's attendance
-- Profile Cards: Avatar (large), Name, Role, Contact info
+**Buttons:**
+- Primary: `bg-blue-600 hover:bg-blue-700 rounded-lg px-6 py-3 text-white font-semibold`
+- Secondary: `border-2 border-blue-600 text-blue-600 hover:bg-blue-50`
+- Success: `bg-green-600` | Danger: `bg-red-600`
+- Icon: 40x40 rounded-lg | FAB: Fixed bottom-right, rounded-full
 
-**Badges & Tags**:
-- Status badges: Pill shape (rounded-full), px-3 py-1, text-xs
-- Role tags: Rectangular (rounded), border, minimal background
-- Count indicators: Circle, absolute positioning for notifications
+**Status Badges:**
+```css
+rounded-full px-3 py-1 text-xs font-medium
+Present: bg-green-100 text-green-800 border-green-200
+Absent: bg-red-100 text-red-800 border-red-200
+Late: bg-amber-100 text-amber-800 border-amber-200
+Excused: bg-blue-100 text-blue-800 border-blue-200
+```
 
-**Charts & Visualizations**:
-- Use Chart.js or ApexCharts libraries
-- Gradient fills for area charts
-- Rounded bars for bar charts
-- Interactive tooltips with detailed info
-- Legend: Positioned based on chart type
-- Responsive sizing with aspect ratio maintenance
+**Modals:**
+```css
+Overlay: backdrop-blur-sm bg-black/50
+Card: max-w-2xl rounded-2xl centered
+Header: py-4 px-6 border-b text-xl + close
+Body: p-6 max-h-96 overflow-y-auto
+Footer: px-6 py-4 border-t, buttons right
+```
 
-## Attendance Capture Interface
+**Charts (ApexCharts):**
+- Blue gradients, rounded bars, smooth curves
+- Tooltips: Custom blue accent
+- Legends: Bottom-center (horizontal) / Right (vertical)
 
-**Photo Display Grid**:
-- Masonry layout for multiple class photos
-- Thumbnail size: 150x150 (mobile), 200x200 (desktop)
-- Lightbox on click for full view
-- Timestamp and uploader info overlay
-- Download option per photo
+**Student/Class Cards:**
+```css
+Photo: 120x120 rounded-lg top
+Name: text-lg font-semibold truncate
+Meta: Role/class, ID (Roboto Mono)
+Badge: top-right corner
+Hover: shadow-lg -translate-y-1 (200ms)
+```
 
-**Student Selection Grid**:
-- Grid of student cards (3 columns mobile, 5-6 desktop)
-- Each card: Avatar, Name, Status toggle
-- Quick actions: Mark present, absent, late, excused with single tap
-- Batch selection with checkboxes (optional)
-- Search and filter bar above grid
+## Attendance Capture
 
-## Login & Authentication Screens
+**Photo Upload:**
+- Dashed border dropzone (blue on drag)
+- Thumbnails: 150x150 rounded-lg with delete overlay
+- Lightbox modal, metadata display
 
-**Login Page**:
-- Split layout: 1/2 branding/illustration, 1/2 form (desktop)
-- Stacked layout (mobile)
-- Form: Phone number input, OTP verification flow
-- Role selector: Radio buttons or dropdown
-- "Forgot Password" link, minimal footer
+**Student Grid:**
+- 2-5 cols responsive
+- Cards: Photo, name, status toggle, color-coded quick-mark icons
+- Batch mode: Checkboxes + "Mark all as" dropdown
+- Search bar: Instant filter
 
-**Registration Flow**:
-- Multi-step wizard with progress indicator
-- Steps: Personal info → Phone verification → Role assignment → Complete
-- Back/Next navigation, step validation
+## Auth & Reports
 
-## Reports & Analytics Pages
+**Login:**
+- Centered card on gradient blue bg
+- Logo + phone input + OTP + role selector (radio cards)
+- Language switcher top-right (UZ/RU/EN flags)
 
-**Report Builder**:
-- Filter panel (left sidebar or collapsible)
-- Filters: Date range, Class, Student, Admin, Report type
-- Main area: Generated report with export buttons (Excel, PDF)
-- Visualization tabs: Chart view, Table view, Summary
+**Reports:**
+- Left filter sidebar 280px (date, school/class/student multi-select)
+- Export: Excel, PDF, Print (top-right)
+- Toggle: Chart / Table / Summary views
 
-**Statistics Dashboard**:
-- KPI cards at top (attendance rate, trend vs last period)
-- Charts grid: Attendance by class, by day, by period
-- Leaderboard: Best attendance students/classes
-- Comparison tables
+**Analytics:**
+- Time selector (Today/Week/Month/Year/Custom)
+- KPI comparison cards vs previous period
+- Charts: Bar (by class), Line (daily), Donut (status)
 
-## Mobile Responsive Patterns
+## Images & Placeholders
 
-- Hamburger menu for navigation (mobile)
-- Bottom navigation bar for primary actions
-- Swipeable cards and tabs
-- Collapsible sections with chevron indicators
-- Touch-friendly targets (min 44x44px)
-- Simplified data tables with expandable rows
+**No hero images** - Data-first dashboards with subtle geometric patterns/gradient meshes
+**Photos:** Student headshots, class photos, school logos
+**Placeholders:** Initials in blue gradient circle | Loading: Skeleton shimmer
 
-## Images & Photography
+## Mobile
 
-**Dashboard Hero Section**:
-No traditional hero image. Opens directly with statistics cards and real-time data.
+- Bottom nav: 5 actions (Dashboard, Attendance, Students, Reports, Profile)
+- Hamburger for secondary nav | Swipeable cards
+- Touch: Min 44x44px | Simplified single-metric chart views
 
-**Photo Integration Points**:
-1. **Attendance Photos**: Captured during roll call, displayed in grids within attendance records
-2. **Student Profiles**: Headshot photos in cards and lists
-3. **Activity Feed**: Thumbnails of recent attendance photos
-4. **Class Overview**: Representative class photo or collage
-5. **Background Patterns**: Subtle geometric patterns or gradients, not photographic
+## Accessibility (WCAG AA)
 
-**Placeholder Strategy**:
-- Student without photo: Initials in colored circle
-- Class without photo: Icon representation
-- Loading states: Skeleton screens with shimmer effect
+- Contrast: 4.5:1 body, 3:1 large text
+- Keyboard: Full tab order, Enter/Space, Escape to close
+- Screen readers: ARIA labels, live regions for real-time
+- Focus: 2px blue ring
+- Forms: Inline validation with descriptions
+- Lang: `lang="uz"` attribute
 
-## Accessibility Considerations
+## Animations (Purposeful Only)
 
-- WCAG AA contrast ratios throughout
-- Keyboard navigation for all interactive elements
-- Screen reader labels for icons
-- Focus indicators (ring-2 with accent color)
-- Alt text for all images
-- Semantic HTML structure
-- Form field labels properly associated
+- Button hover: `scale-102` + brightness (instant)
+- Card hover: `shadow-lg -translate-y-1` (200ms)
+- Page: Fade-in (300ms) | Real-time: Pulse (500ms)
+- Success: Checkmark scale-in | Loading: Shimmer/spinner
+**Avoid:** Parallax, continuous loops, scroll effects
 
-## Animation & Interactions
+## Dark/Light Toggle
 
-**Micro-interactions** (minimal, purposeful):
-- Button hover: Subtle scale (scale-105), brightness change
-- Card hover: Lift effect (shadow increase, translate-y-1)
-- Loading states: Pulse or spin for indicators
-- Success/Error: Brief check/x icon animation
-- Page transitions: Fade in content (0.2s ease)
-- Chart animations: Staggered entrance (0.3s)
+Icon button (sun/moon) in top bar, persists to localStorage
+- **Light:** White bg, blue accents, subtle shadows
+- **Dark:** Navy `#0F172A`, semi-transparent blurred cards, lighter blue, soft glows
 
-**Avoid**: Excessive parallax, continuous animations, distracting effects
+---
 
-## Dark/Light Mode Strategy
-
-**Light Mode (Default)**:
-- Background: Light gray gradients
-- Cards: White with subtle shadows
-- Text: Dark gray hierarchy
-
-**Dark Mode**:
-- Background: Deep blue-gray gradients (Vision UI style)
-- Cards: Semi-transparent with glassmorphism
-- Text: White/light gray hierarchy
-- Accent colors: More vibrant, glowing effects
-- Emphasis on depth through layered shadows and blur
-
-**Toggle**: Icon button in top navigation, persists preference
-
-This design system creates a cohesive, modern educational platform that feels professional for administrators while remaining approachable for students and parents, with clear data presentation as the foundation.
+**Implementation Priority:** Data visibility > Visual decoration. Clear role-based hierarchies. Professional Uzbek educational context. Real-time updates without overwhelm.
