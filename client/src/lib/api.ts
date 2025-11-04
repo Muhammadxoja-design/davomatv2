@@ -37,9 +37,13 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
       ...(options.headers as Record<string, string>),
     };
+
+    // Only add Content-Type for non-FormData requests
+    if (!(options.body instanceof FormData)) {
+      headers['Content-Type'] = 'application/json';
+    }
 
     if (this.token) {
       headers['Authorization'] = `Bearer ${this.token}`;
@@ -55,6 +59,16 @@ class ApiClient {
       throw new Error(error.error || 'Xatolik yuz berdi');
     }
 
+    // Handle different response types
+    const contentType = response.headers.get('content-type');
+    if (contentType?.includes('application/json')) {
+      return response.json();
+    } else if (contentType?.includes('application/octet-stream') || contentType?.includes('application/pdf')) {
+      return response.blob() as any;
+    } else if (response.status === 204) {
+      return undefined as any;
+    }
+    
     return response.json();
   }
 
@@ -134,61 +148,35 @@ class ApiClient {
   }
 
   // Students
-  async getStudents(classId: string): Promise<any[]> {
-    return this.request<any[]>(`/students?class_id=${classId}`);
+  async getStudents(schoolId?: string, classId?: string): Promise<any[]> {
+    const params = new URLSearchParams();
+    if (schoolId) params.append('school_id', schoolId);
+    if (classId) params.append('class_id', classId);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request<any[]>(`/students${query}`);
   }
 
-  async createStudent(data: FormData): Promise<any> {
-    const headers: HeadersInit = {};
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
-    }
-
-    const response = await fetch(`${API_URL}/students`, {
+  async createStudent(formData: FormData): Promise<any> {
+    return this.request<any>('/students', {
       method: 'POST',
-      headers,
-      body: data,
+      body: formData,
     });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Xatolik yuz berdi' }));
-      throw new Error(error.error || 'Xatolik yuz berdi');
-    }
-
-    return response.json();
   }
 
   // Attendance
-  async getAttendance(params: {
-    class_id?: string;
-    student_id?: string;
-    date?: string;
-    period?: number;
-    start_date?: string;
-    end_date?: string;
-  }): Promise<any[]> {
-    const query = new URLSearchParams(params as any).toString();
-    return this.request<any[]>(`/attendance?${query}`);
+  async getAttendance(classId?: string, date?: string): Promise<any[]> {
+    const params = new URLSearchParams();
+    if (classId) params.append('class_id', classId);
+    if (date) params.append('date', date);
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return this.request<any[]>(`/attendance${query}`);
   }
 
-  async markAttendance(data: FormData): Promise<any> {
-    const headers: HeadersInit = {};
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
-    }
-
-    const response = await fetch(`${API_URL}/attendance`, {
+  async markAttendance(formData: FormData): Promise<any> {
+    return this.request<any>('/attendance', {
       method: 'POST',
-      headers,
-      body: data,
+      body: formData,
     });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Xatolik yuz berdi' }));
-      throw new Error(error.error || 'Xatolik yuz berdi');
-    }
-
-    return response.json();
   }
 
   // Statistics
@@ -200,10 +188,55 @@ class ApiClient {
   }
 
   // Activity Logs
-  async getActivityLogs(userId?: string, limit: number = 100): Promise<any[]> {
+  async getActivities(schoolId?: string, limit: number = 100): Promise<any[]> {
     const params = new URLSearchParams({ limit: limit.toString() });
-    if (userId) params.append('user_id', userId);
+    if (schoolId) params.append('school_id', schoolId);
     return this.request<any[]>(`/activity-logs?${params.toString()}`);
+  }
+
+  // Reports
+  async getReport(params: {
+    class_id: string;
+    type: string;
+    start_date: string;
+    end_date: string;
+  }): Promise<any> {
+    const query = new URLSearchParams(params as any).toString();
+    return this.request<any>(`/reports?${query}`);
+  }
+
+  async exportReport(params: {
+    class_id: string;
+    type: string;
+    start_date: string;
+    end_date: string;
+    format: 'excel' | 'pdf';
+  }): Promise<Blob> {
+    const query = new URLSearchParams(params as any).toString();
+    const headers: Record<string, string> = {};
+    
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(`${API_URL}/reports/export?${query}`, {
+      headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Xatolik yuz berdi' }));
+      throw new Error(error.error || 'Xatolik yuz berdi');
+    }
+
+    return response.blob();
+  }
+
+  // Profile
+  async updateProfile(data: any): Promise<User> {
+    return this.request<User>('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
   }
 }
 

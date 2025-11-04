@@ -1,6 +1,6 @@
 # Maktab Davomat Tizimi / School Attendance System
 
-To'liq maktab davomat boshqaruv tizimi - Telegram bot va Vue.js dashboard bilan.
+To'liq maktab davomat boshqaruv tizimi - Telegram bot va React dashboard bilan.
 
 ## Loyiha haqida
 
@@ -16,11 +16,13 @@ Bu loyiha maktablar uchun zamonaviy davomat olish va boshqarish tizimi. 3 daraja
 - **Real-time**: WebSocket
 - **File Upload**: Multer + Sharp
 
-### Frontend (Dashbo ard)
-- **Framework**: Vue.js 3 (Composition API)
-- **Styling**: TailwindCSS (Vision UI inspired)
-- **State**: Pinia
-- **Charts**: Chart.js / ApexCharts
+### Frontend (Dashboard)
+- **Framework**: React 18 + Vite
+- **Routing**: Wouter
+- **Styling**: TailwindCSS + Shadcn UI (Professional Blue/White theme)
+- **State Management**: TanStack React Query
+- **Language**: Uzbek (O'zbek tili)
+- **Theme**: Dark/Light mode support
 - **Export**: ExcelJS, jsPDF
 
 ## Asosiy Imkoniyatlar
@@ -102,8 +104,13 @@ DATABASE_URL=postgresql://user:password@localhost:5432/school_attendance
 │   │   └── helpers.js     # Helper functions
 │   ├── config.js          # Configuration
 │   └── index.js           # Bot entry point
-├── client/                # Vue.js dashboard
+├── client/                # React dashboard
 │   └── src/
+│       ├── pages/        # All pages (Login, Dashboard, Classes, etc.)
+│       ├── components/   # Reusable UI components (Shadcn)
+│       ├── contexts/     # React contexts (Auth)
+│       ├── lib/          # Utilities (API client, query client)
+│       └── hooks/        # Custom hooks
 ├── server/                # Express API
 │   ├── database/          # Database utilities
 │   ├── routes.ts          # API routes
