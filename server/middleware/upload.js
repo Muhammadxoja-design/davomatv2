@@ -1,9 +1,9 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const sharp = require('sharp');
-const { v4: uuidv4 } = require('uuid');
-const config = require('../../bot/config');
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
+import config from '../../bot/config.js';
 
 // Ensure upload directories exist
 const uploadDirs = {

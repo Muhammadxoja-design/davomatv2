@@ -1,4 +1,4 @@
-const config = require('../config');
+import config from '../config.js';
 
 class Helpers {
   // Bugungi sana (YYYY-MM-DD)
@@ -194,4 +194,4 @@ class Helpers {
   }
 }
 
-module.exports = Helpers;
+export default Helpers;

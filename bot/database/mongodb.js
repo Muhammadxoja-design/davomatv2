@@ -1,5 +1,5 @@
-const { MongoClient } = require('mongodb');
-const { v4: uuidv4 } = require('uuid');
+import { MongoClient } from 'mongodb';
+import { v4 as uuidv4 } from 'uuid';
 
 class MongoDatabase {
   constructor() {
@@ -429,4 +429,4 @@ class MongoDatabase {
   }
 }
 
-module.exports = MongoDatabase;
+export default MongoDatabase;

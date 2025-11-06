@@ -1,10 +1,10 @@
+// server/middleware/auth.js
 const jwt = require('jsonwebtoken');
-const config = require('../../bot/config');
+const config = require('../../bot/config'); // sizning joyingizga moslang
 
-// JWT token yaratish
 function generateToken(user) {
   return jwt.sign(
-    { 
+    {
       userId: user.id,
       role: user.role,
       schoolId: user.school_id,
@@ -15,51 +15,72 @@ function generateToken(user) {
   );
 }
 
-// JWT token tekshirish middleware
 function authenticate(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    // 1) Authorization header (preferred)
+    const rawAuth = req.headers.authorization || req.headers.Authorization;
+    let token = null;
+
+    if (rawAuth && typeof rawAuth === 'string') {
+      const parts = rawAuth.split(' ');
+      if (parts.length === 2 && parts[0].toLowerCase() === 'bearer') {
+        token = parts[1].trim();
+      }
+    }
+
+    // 2) fallback: query param ?token=...
+    if (!token && req.query && req.query.token) {
+      token = String(req.query.token);
+    }
+
+    // 3) fallback: cookie (require cookie-parser middleware)
+    if (!token && req.cookies && req.cookies.token) {
+      token = req.cookies.token;
+    }
+
+    // debug logs (dev only) — comment out in production
+    // console.log('AUTH debug - header:', rawAuth, 'query:', req.query?.token, 'cookie:', req.cookies?.token);
+
+    if (!token) {
       return res.status(401).json({ error: 'Token topilmadi' });
     }
-    
-    const token = authHeader.substring(7);
-    const decoded = jwt.verify(token, config.JWT_SECRET);
-    
-    req.user = decoded;
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, config.JWT_SECRET);
+    } catch (err) {
+      // give slightly more detail for dev
+      // console.error('JWT verify error:', err);
+      return res.status(401).json({ error: 'Token yaroqsiz yoki muddati o\'tgan' });
+    }
+
+    // normalize user payload (so req.user.userId always exists)
+    const userId = decoded?.userId ?? decoded?.id ?? decoded?.sub ?? null;
+    req.user = { ...(decoded || {}), userId };
+
     next();
-  } catch (error) {
-    return res.status(401).json({ error: 'Token yaroqsiz yoki muddati o\'tgan' });
+  } catch (err) {
+    console.error('authenticate middleware error:', err);
+    return res.status(500).json({ error: 'Server xatosi' });
   }
 }
 
-// Role tekshirish middleware
 function requireRole(...allowedRoles) {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({ error: 'Autentifikatsiya talab qilinadi' });
-    }
-    
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Sizda bu amalni bajarish huquqi yo\'q' });
-    }
-    
+    if (!req.user) return res.status(401).json({ error: 'Autentifikatsiya talab qilinadi' });
+    if (!allowedRoles.includes(req.user.role)) return res.status(403).json({ error: 'Sizda bu amalni bajarish huquqi yo\'q' });
     next();
   };
 }
 
-// Super Admin tekshirish
 function requireSuperAdmin(req, res, next) {
   return requireRole(config.ROLES.SUPER_ADMIN)(req, res, next);
 }
 
-// School Admin yoki Super Admin
 function requireSchoolAdmin(req, res, next) {
   return requireRole(config.ROLES.SUPER_ADMIN, config.ROLES.SCHOOL_ADMIN)(req, res, next);
 }
 
-// Class Admin yoki yuqori
 function requireClassAdmin(req, res, next) {
   return requireRole(config.ROLES.SUPER_ADMIN, config.ROLES.SCHOOL_ADMIN, config.ROLES.CLASS_ADMIN)(req, res, next);
 }

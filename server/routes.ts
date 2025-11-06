@@ -17,10 +17,13 @@ import {
   authLimiter,
   uploadLimiter
 } from './cjs-bridge';
+import { createDbWrapper } from './db-wrapper';
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  const db = getDatabase();
-  
+  const dbRaw = await getDatabase();
+  const db = createDbWrapper(dbRaw);
+
+
   // Health check
   app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -105,26 +108,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get current user
-  app.get('/api/auth/me', authenticate, async (req, res, next) => {
-    try {
-      const user = await db.getUserById(req.user.userId);
-      if (!user) {
-        return res.status(404).json({ error: 'Foydalanuvchi topilmadi' });
-      }
-      
-      res.json({
-        id: user.id,
-        phone_number: user.phone_number,
-        first_name: user.first_name,
-        last_name: user.last_name,
-        role: user.role,
-        school_id: user.school_id,
-        province_id: user.province_id
+
+
+app.post('/api/auth/me', authLimiter, async (req, res, next) => {
+  try {
+    const phoneNumber = req.body.phoneNumber ?? req.body.phone_number ?? req.body.phone ?? null;
+    const password = req.body.password ?? req.body.pass ?? null;
+
+    console.log('Login body:', req.body);
+    console.log('Using phone:', phoneNumber);
+
+    if (!phoneNumber || !password) {
+      await db.createLoginAttempt({
+        phone_number: phoneNumber,
+        ip_address: req.ip,
+        success: false,
+        failure_reason: 'Missing credentials'
       });
-    } catch (error) {
-      next(error);
+      return res.status(400).json({ error: 'Telefon raqam va parol talab qilinadi' });
     }
-  });
+
+    const user = await db.getUserByPhone(phoneNumber);
+    console.log('Found user:', !!user);
+
+    if (!user || !user.password) {
+      await db.createLoginAttempt({
+        phone_number: phoneNumber,
+        ip_address: req.ip,
+        success: false,
+        failure_reason: 'User not found'
+      });
+      return res.status(401).json({ error: 'Telefon raqam yoki parol noto\'g\'ri' });
+    }
+
+    const validPassword = await bcrypt.compare(password, user.password);
+    console.log('validPassword:', validPassword);
+
+    if (!validPassword) {
+      await db.createLoginAttempt({
+        phone_number: phoneNumber,
+        ip_address: req.ip,
+        success: false,
+        failure_reason: 'Invalid password'
+      });
+      return res.status(401).json({ error: 'Telefon raqam yoki parol noto\'g\'ri' });
+    }
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 
   // ============ USER ROUTES ============
   

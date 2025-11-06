@@ -43,4 +43,4 @@ function addProvinceMethods(db) {
   return db;
 }
 
-module.exports = { addProvinceMethods };
+export default { addProvinceMethods };

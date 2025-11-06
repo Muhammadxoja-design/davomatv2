@@ -1,6 +1,6 @@
-const QRCode = require('qrcode');
-const fs = require('fs');
-const path = require('path');
+import QRCode from 'qrcode';
+import fs from 'fs';
+import path from 'path';
 
 class QRCodeUtils {
   // QR kod yaratish (data URL)
@@ -63,4 +63,4 @@ class QRCodeUtils {
   }
 }
 
-module.exports = QRCodeUtils;
+export default QRCodeUtils;

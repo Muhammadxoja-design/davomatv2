@@ -1,15 +1,16 @@
-const { Telegraf, Markup } = require('telegraf');
-const config = require('./config');
-const { getDatabase } = require('./database');
-const AuthUtils = require('./utils/auth');
-const Helpers = require('./utils/helpers');
+import { Telegraf, Markup } from 'telegraf';
+import config from './config.js';
+import getDatabase from './database/index.js';
+import AuthUtils from './utils/auth.js';
+import Helpers from './utils/helpers.js';
 
 // Initialize bot
 const bot = new Telegraf(config.TELEGRAM_BOT_TOKEN);
-const db = getDatabase();
 
 // User sessions (in-memory storage for conversation state)
 const sessions = new Map();
+
+let db;
 
 // Get or create session
 function getSession(userId) {
@@ -36,14 +37,14 @@ function getMainMenu(role) {
     );
   } else if (role === config.ROLES.SCHOOL_ADMIN) {
     buttons.push(
-      ['🎓 Sinflar', '👨‍🎓 O'quvchilar'],
+      ['🎓 Sinflar', '👨‍🎓 O\'quvchilar'],
       ['👥 Foydalanuvchilar', '📊 Statistika'],
       ['📋 Hisobotlar']
     );
   } else if (role === config.ROLES.CLASS_ADMIN) {
     buttons.push(
       ['📝 Davomat olish', '📊 Hisobotlar'],
-      ['👨‍🎓 O'quvchilar', '📸 Rasmlar']
+      ['👨‍🎓 O\'quvchilar', '📸 Rasmlar']
     );
   } else if (role === config.ROLES.PARENT) {
     buttons.push(
@@ -708,11 +709,13 @@ bot.catch((err, ctx) => {
 // Launch bot
 async function startBot() {
   try {
-    console.log('🤖 Telegram bot ishga tushmoqda...');
+    db = await getDatabase(); 
+    console.log('DB tayyor!');
+
     await bot.launch();
-    console.log('✅ Bot muvaffaqiyatli ishga tushdi!');
+    console.log('Bot ishga tushdi!');
   } catch (error) {
-    console.error('❌ Bot ishga tushurishda xatolik:', error);
+    console.error('Bot ishga tushurishda xatolik:', error);
     process.exit(1);
   }
 }
@@ -722,4 +725,6 @@ process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
 
 // Export
-module.exports = { bot, startBot };
+
+startBot();
+export default { bot, startBot };

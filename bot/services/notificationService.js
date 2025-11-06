@@ -1,6 +1,6 @@
-const cron = require('node-cron');
-const { getDatabase } = require('../database');
-const Helpers = require('../utils/helpers');
+import cron from 'node-cron';
+import getDatabase from '../database/index.js';
+import Helpers from '../utils/helpers.js';
 
 class NotificationService {
   constructor(bot) {
@@ -209,4 +209,4 @@ class NotificationService {
   }
 }
 
-module.exports = NotificationService;
+export default NotificationService;

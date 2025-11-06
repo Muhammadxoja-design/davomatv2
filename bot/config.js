@@ -1,6 +1,7 @@
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-module.exports = {
+export default {
   // Telegram Bot
   TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
   
@@ -28,6 +29,8 @@ module.exports = {
   TIMEZONE: process.env.TZ || 'Asia/Tashkent',
   
   // School Day Schedule (6 periods)
+
+  // +998907851685
   SCHOOL_PERIODS: [
     { period: 1, start: '08:00', end: '09:00' },
     { period: 2, start: '09:00', end: '10:00' },

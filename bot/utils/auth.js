@@ -1,6 +1,6 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const config = require('../config');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import config from '../config.js';
 
 class AuthUtils {
   // Hash parol
@@ -63,4 +63,4 @@ class AuthUtils {
   }
 }
 
-module.exports = AuthUtils;
+export default AuthUtils;

@@ -1,30 +1,31 @@
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 dotenv.config();
 
 const DB_TYPE = process.env.DB_TYPE || 'file';
 
 let database;
 
-function getDatabase() {
+export default async function getDatabase() {
   if (!database) {
     switch (DB_TYPE) {
-      case 'file':
-        const SQLiteDatabase = require('./sqlite');
+      case 'file': {
+        const { default: SQLiteDatabase } = await import('./sqlite.js');
         database = new SQLiteDatabase();
         break;
-      case 'mongodb':
-        const MongoDatabase = require('./mongodb');
+      }
+      case 'mongodb': {
+        const { default: MongoDatabase } = await import('./mongodb.js');
         database = new MongoDatabase();
         break;
-      case 'postgresql':
-        const PostgreSQLDatabase = require('./postgresql');
+      }
+      case 'postgresql': {
+        const { default: PostgreSQLDatabase } = await import('./postgresql.js');
         database = new PostgreSQLDatabase();
         break;
+      }
       default:
         throw new Error(`Unknown DB_TYPE: ${DB_TYPE}`);
     }
   }
   return database;
 }
-
-module.exports = { getDatabase };

@@ -1,3 +1,4 @@
+const token = localStorage.getItem("token");
 const API_URL = '/api';
 
 export interface User {
@@ -49,10 +50,16 @@ class ApiClient {
       headers['Authorization'] = `Bearer ${this.token}`;
     }
 
-    const response = await fetch(`${API_URL}${endpoint}`, {
-      ...options,
-      headers,
-    });
+console.log('Making request to:', `${API_URL}${endpoint}`);
+
+const response = await fetch(`${API_URL}${endpoint}`, {
+  ...options,
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+    ...headers, // merge extra headers if needed
+  },
+});
 
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Xatolik yuz berdi' }));

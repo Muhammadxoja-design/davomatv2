@@ -1,7 +1,10 @@
-const Database = require('better-sqlite3');
-const path = require('path');
-const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
+import BetterSqlite3 from 'better-sqlite3';
+import path from 'path';
+import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
+
+const Database = BetterSqlite3; // BetterSqlite3 is the constructor
+
 
 class SQLiteDatabase {
   constructor() {
@@ -464,4 +467,4 @@ class SQLiteDatabase {
   }
 }
 
-module.exports = SQLiteDatabase;
+export default SQLiteDatabase;
